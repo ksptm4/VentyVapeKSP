@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VentyCalc – Vape Session Planner</title>
+<style>
+html { background-color: #0b1220; }
+body { margin:0; padding:12px 12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background-color:#0b1220; color:#e5e7eb; }
+
+.container { max-width: 900px; margin:0 auto; padding:15px 24px; display:flex; flex-wrap:wrap; gap:24px; }
+.left-panel { flex:1; min-width:300px; display:flex; flex-direction:column; gap:6px; } /* spacing between sliders and selects */
+.right-panel { min-width:240px; max-width:300px; background-color:#1e293b; border-radius:12px; padding:12px; box-shadow: inset 0 0 10px rgba(56,189,248,0.2); }
+
+h1 { text-align:center; color:#38bdf8; margin:0 0 14px 0; }
+
+label { display:block; margin-bottom:6px; font-weight:600; color:#cbd5f5; }
+.slider-container, .select-container { margin-bottom:6px; } /* reduced spacing */
+.value-display { margin-left:6px; font-weight:700; color:#38bdf8; }
+
+input[type="range"] { width:100%; cursor:pointer; accent-color:#38bdf8; }
+select { width:100%; padding:6px 8px; border-radius:6px; border:1px solid #334155; background-color:#020617; color:#e5e7eb; font-size:0.95rem; }
+select:focus { outline:none; border-color:#38bdf8; }
+
+.result, .weekly-plan { margin-top:14px; padding:12px 16px; border-radius:12px; background-color:#020617; color:#bfdbfe; box-shadow: inset 0 0 14px rgba(56,189,248,0.18), 0 8px 20px rgba(0,0,0,0.4);}
+.result p, .weekly-plan p { margin:6px 0; font-size:0.95rem; line-height:1.2;} 
+.highlight { font-weight:700; color:#93c5fd; }
+
+.warning { margin-top:5px; font-weight:700; color:#fb7185; animation:pulse 1.2s infinite;}
+@keyframes pulse {0%{opacity:1;}50%{opacity:0.35;}100%{opacity:1;}}
+
+footer { margin-top:10px; text-align:center; font-size:0.8rem; color:#64748b;}
+
+.summary-container { display:flex; gap:12px; }
+.summary-left, .summary-right { flex:1; }
+.summary-right { min-width:180px; }
+</style>
+</head>
+<body>
+
+<h1>VentyCalc – Vape Session Planner</h1>
+
+<div class="container">
+
+  <div class="left-panel">
+
+    <div class="slider-container">
+      <label for="capsule">Capsule Weight (g): <span class="value-display" id="capsuleVal">0.10</span></label>
+      <input type="range" id="capsule" min="0.10" max="0.15" step="0.01" value="0.10">
+    </div>
+
+    <div class="slider-container">
+      <label for="temp">Temperature (°C): <span class="value-display" id="tempVal">170</span></label>
+      <input type="range" id="temp" min="170" max="210" step="1" value="170">
+    </div>
+
+    <div class="slider-container">
+      <label for="herbTotal">Total Herb Available (g): <span class="value-display" id="herbVal">14.0</span></label>
+      <input type="range" id="herbTotal" min="0.5" max="28" step="0.5" value="14">
+    </div>
+
+    <div class="slider-container">
+      <label for="pricePerOunce">Price per Ounce (£): <span class="value-display" id="priceVal">200</span></label>
+      <input type="range" id="pricePerOunce" min="20" max="240" step="5" value="100">
+    </div>
+
+    <div class="select-container">
+      <label for="storkPercent">Stem / Stork Weight (% of total):</label>
+      <select id="storkPercent">
+        <option value="0" selected>0% (vape everything)</option>
+        <option value="0.05">5%</option>
+        <option value="0.10">10%</option>
+        <option value="0.15">15%</option>
+      </select>
+      <div id="storkWarning" class="warning" style="display:block;">
+        Select stem/stork percentage unless you plan to vape them you filthy beast, where's your standards? &lt;3
+      </div>
+    </div>
+
+    <div class="select-container">
+      <label for="airflow">Airflow Setting:</label>
+      <select id="airflow">
+        <option value="0.85">Low</option>
+        <option value="1" selected>Medium</option>
+        <option value="1.15">High</option>
+      </select>
+    </div>
+
+    <div class="result summary-container" aria-live="polite">
+      <div class="summary-left">
+        <p>Estimated <span class="highlight">Draws per Capsule</span>: <span id="draws">8</span></p>
+        <p>Grams per <span class="highlight">Draw</span>: <span id="gramsPerDraw">0.05</span> g</p>
+        <p><span class="highlight">Total Capsules Available</span>: <span id="totalCapsules">140</span></p>
+        <p>Usable Herb After Stems: <span class="highlight" id="usableHerb">11.90</span> g</p>
+      </div>
+      <div class="summary-right">
+        <p>Cost per Gram: £<span id="costPerGram">0.00</span></p>
+        <p>Cost per Capsule: £<span id="costPerCapsule">0.00</span></p>
+        <p>Cost per Draw: £<span id="costPerDraw">0.00</span></p>
+        <p>Cost per Workday Weeks: £<span id="costWorkday">0.00</span></p>
+        <p>Cost per Single Weekends: £<span id="costWeekend">0.00</span></p>
+        <p>Total Cost Weeks Combined: £<span id="costTotal">0.00</span></p>
+        <p>Cost of Wasted Stems: £<span id="costStems">0.00</span></p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="right-panel">
+    <h2 style="color:#38bdf8; text-align:center; margin-top:0;">Weekly Planning</h2>
+
+    <div class="select-container">
+      <label for="weekdaySessions">Capsules per Workday Session:</label>
+      <select id="weekdaySessions">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+
+    <div class="select-container">
+      <label for="weekendSessions">Capsules per Weekend Session:</label>
+      <select id="weekendSessions">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+
+    <div class="select-container">
+      <label for="totalWeeks">Total Weeks:</label>
+      <select id="totalWeeks">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </div>
+
+    <div class="weekly-plan" aria-live="polite">
+      <p>Total Capsules per Workday Weeks: <span id="totalCapsulesWorkday">0</span></p>
+      <p>Total Capsules per Single Weekends: <span id="totalCapsulesWeekend">0</span></p>
+      <p>Total Capsules per Week: <span id="totalCapsulesWeek">0</span></p>
+      <p id="spareCapsules" class="warning" style="display:none;">Spare Capsules: 0</p>
+      <p>Total Herb Used on Workday Weeks: <span id="weekdayHerb">0.00</span> g</p>
+      <p>Total Herb Used on Single Weekends: <span id="weekendHerb">0.00</span> g</p>
+      <p>Total Herb Used Weeks Combined: <span id="weeklyTotal">0.00</span> g</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>© 2026 VentyCalc — Easy on the eyes & ready for your sesh's - Kitchenspoon 2026</footer>
+
+<script>
+// Full dynamic JavaScript from R1.27 (unchanged)
+const capsuleSlider=document.getElementById('capsule');const tempSlider=document.getElementById('temp');const herbSlider=document.getElementById('herbTotal');const airflowSelect=document.getElementById('airflow');const storkSelect=document.getElementById('storkPercent');const capsuleVal=document.getElementById('capsuleVal');const tempVal=document.getElementById('tempVal');const herbVal=document.getElementById('herbVal');const priceSlider=document.getElementById('pricePerOunce');const priceVal=document.getElementById('priceVal');const drawsOutput=document.getElementById('draws');const gramsPerDrawOutput=document.getElementById('gramsPerDraw');const totalCapsulesOutput=document.getElementById('totalCapsules');const usableHerbOutput=document.getElementById('usableHerb');const totalCapsulesWeekOutput=document.getElementById('totalCapsulesWeek');const totalCapsulesWorkdayOutput=document.getElementById('totalCapsulesWorkday');const totalCapsulesWeekendOutput=document.getElementById('totalCapsulesWeekend');const spareCapsulesOutput=document.getElementById('spareCapsules');const weekdaySelect=document.getElementById('weekdaySessions');const weekendSelect=document.getElementById('weekendSessions');const totalWeeksSelect=document.getElementById('totalWeeks');const weekdayHerbOutput=document.getElementById('weekdayHerb');const weekendHerbOutput=document.getElementById('weekendHerb');const weeklyTotalOutput=document.getElementById('weeklyTotal');const costPerGramOutput=document.getElementById('costPerGram');const costPerCapsuleOutput=document.getElementById('costPerCapsule');const costPerDrawOutput=document.getElementById('costPerDraw');const costWorkdayOutput=document.getElementById('costWorkday');const costWeekendOutput=document.getElementById('costWeekend');const costTotalOutput=document.getElementById('costTotal');const costStemsOutput=document.getElementById('costStems');const BASE_DRAWS=8;function updateDashboard(){const capsule=Math.round(parseFloat(capsuleSlider.value)*100)/100;const temp=parseInt(tempSlider.value);const totalHerb=parseFloat(herbSlider.value);const airflowMultiplier=parseFloat(airflowSelect.value);const storkPercent=parseFloat(storkSelect.value);const totalWeeks=parseInt(totalWeeksSelect.value);const pricePerOunce=parseFloat(priceSlider.value);priceVal.textContent=pricePerOunce;capsuleVal.textContent=capsule.toFixed(2);tempVal.textContent=temp;herbVal.textContent=totalHerb.toFixed(1);const usableHerb=totalHerb*(1-storkPercent);usableHerbOutput.textContent=usableHerb.toFixed(2);storkWarning.style.display=(storkPercent===0)?'block':'none';let drawsRaw=BASE_DRAWS-((temp-170)/10)-(((capsule-0.10)/0.05)*1.5);drawsRaw/=airflowMultiplier;const drawsCeil=Math.max(1,Math.ceil(drawsRaw));drawsOutput.textContent=drawsCeil;const gramsPerDraw=Math.max(0,capsule/drawsCeil);gramsPerDrawOutput.textContent=gramsPerDraw.toFixed(3);const totalCapsulesAvailable=Math.floor(Math.round(usableHerb*1000)/Math.round(capsule*1000));totalCapsulesOutput.textContent=totalCapsulesAvailable;const weekdayCapsules=parseInt(weekdaySelect.value);const weekendCapsules=parseInt(weekendSelect.value);const totalWorkdayCapsules=weekdayCapsules*5*totalWeeks;const totalWeekendCapsules=weekendCapsules*2*totalWeeks;const totalCapsulesWeek=totalWorkdayCapsules+totalWeekendCapsules;totalCapsulesWorkdayOutput.textContent=totalWorkdayCapsules;totalCapsulesWeekendOutput.textContent=totalWeekendCapsules;totalCapsulesWeekOutput.textContent=totalCapsulesWeek;const weekdayHerb=capsule*totalWorkdayCapsules;const weekendHerb=capsule*totalWeekendCapsules;const weeklyTotal=weekdayHerb+weekendHerb;weekdayHerbOutput.textContent=weekdayHerb.toFixed(2);weekendHerbOutput.textContent=weekendHerb.toFixed(2);weeklyTotalOutput.textContent=weeklyTotal.toFixed(2);const spare=totalCapsulesAvailable-totalCapsulesWeek;if(spare>0){spareCapsulesOutput.style.display='block';spareCapsulesOutput.textContent=`Spare Capsules: ${Math.floor(spare)}`;}else{spareCapsulesOutput.style.display='none';}const costPerGram=pricePerOunce/28;const costPerCapsule=capsule*costPerGram;const costPerDraw=gramsPerDraw*costPerGram;const costWorkday=totalWorkdayCapsules*costPerCapsule;const costWeekend=totalWeekendCapsules*costPerCapsule;const costTotal=totalCapsulesWeek*costPerCapsule;const costStems=totalHerb*storkPercent*costPerGram;costPerGramOutput.textContent=costPerGram.toFixed(2);costPerCapsuleOutput.textContent=costPerCapsule.toFixed(2);costPerDrawOutput.textContent=costPerDraw.toFixed(2);costWorkdayOutput.textContent=costWorkday.toFixed(2);costWeekendOutput.textContent=costWeekend.toFixed(2);costTotalOutput.textContent=costTotal.toFixed(2);costStemsOutput.textContent=costStems.toFixed(2);}
+[capsuleSlider,tempSlider,herbSlider,priceSlider].forEach(el=>el.addEventListener('input',updateDashboard));
+[airflowSelect,storkSelect,weekdaySelect,weekendSelect,totalWeeksSelect].forEach(el=>el.addEventListener('change',updateDashboard));
+updateDashboard();
+</script>
+
+</body>
+</html>
