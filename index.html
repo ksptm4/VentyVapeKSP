@@ -7,17 +7,43 @@
 <style>
 html { background-color:#0b1220; }
 body { margin:0; padding:12px; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background-color:#0b1220; color:#e5e7eb; }
+
 .container { max-width:960px; margin:0 auto; padding:15px 24px; display:flex; flex-wrap:wrap; gap:24px; }
-.left-panel { flex:1; min-width:300px; display:flex; flex-direction:column; gap:6px; }
-.right-panel { min-width:320px; max-width:380px; background-color:#1e293b; border-radius:12px; padding:14px; box-shadow: inset 0 0 10px rgba(56,189,248,0.2); }
+
+.left-panel {
+  flex:1;
+  min-width:300px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  background-color: #1a2333;
+  padding: 12px;
+  border-radius:12px;
+}
+
+.right-panel {
+  min-width:320px;
+  max-width:380px;
+  background-color:#1e293b;
+  border-radius:12px;
+  padding:14px;
+  box-shadow: inset 0 0 10px rgba(56,189,248,0.2);
+}
+
 h1 { text-align:center; color:#38bdf8; margin:0 0 14px; }
 label { display:block; margin-bottom:6px; font-weight:600; color:#cbd5f5; }
 .slider-container, .select-container { margin-bottom:6px; }
 .value-display { margin-left:6px; font-weight:700; color:#38bdf8; }
 input[type="range"] { width:100%; cursor:pointer; accent-color:#38bdf8; }
 select { width:100%; padding:6px 8px; border-radius:6px; border:1px solid #334155; background-color:#020617; color:#e5e7eb; font-size:0.95rem; }
-.result, .weekly-plan, .joints-plan { margin-top:14px; padding:12px 16px; border-radius:12px; background-color:#020617; color:#bfdbfe; box-shadow: inset 0 0 14px rgba(56,189,248,0.18), 0 8px 20px rgba(0,0,0,0.4); }
-.result p, .weekly-plan p, .joints-plan p { margin:6px 0; font-size:0.95rem; line-height:1.2;}
+
+.result, .weekly-plan, .joints-plan {
+  margin-top:14px; padding:12px 16px; border-radius:12px;
+  background-color:#020617; color:#bfdbfe;
+  box-shadow: inset 0 0 14px rgba(56,189,248,0.18), 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.result p, .weekly-plan p, .joints-plan p { margin:6px 0; font-size:0.95rem; line-height:1.2; }
 .highlight { font-weight:700; color:#93c5fd; }
 .warning { margin-top:5px; font-weight:700; color:#fb7185; animation:pulse 1.2s infinite; }
 @keyframes pulse {0%{opacity:1;}50%{opacity:0.35;}100%{opacity:1;}}
@@ -88,13 +114,13 @@ footer { margin-top:10px; text-align:center; font-size:0.8rem; color:#64748b; }
       <p id="capsShortfall" class="warning" style="display:none;"></p>
     </div>
     <div class="summary-right">
-      <p>Cost per Gram: £<span id="costPerGram">0.00</span></p>
-      <p>Cost per Capsule: £<span id="costPerCapsule">0.00</span></p>
-      <p>Cost per Draw: £<span id="costPerDraw">0.00</span></p>
-      <p>Cost per Workday Weeks: £<span id="costWorkday">0.00</span></p>
-      <p>Cost per Single Weekends: £<span id="costWeekend">0.00</span></p>
-      <p>Total Cost Weeks Combined: £<span id="costTotal">0.00</span></p>
-      <p>Cost of Wasted Stems: £<span id="costStems">0.00</span></p>
+      <p>Cost per Gram: <span id="costPerGram">0.00</span></p>
+      <p>Cost per Capsule: <span id="costPerCapsule">0.00</span></p>
+      <p>Cost per Draw: <span id="costPerDraw">0.00</span></p>
+      <p>Cost per Workday Weeks: <span id="costWorkday">0.00</span></p>
+      <p>Cost per Single Weekends: <span id="costWeekend">0.00</span></p>
+      <p>Total Cost Weeks Combined: <span id="costTotal">0.00</span></p>
+      <p>Cost of Wasted Stems: <span id="costStems">0.00</span></p>
     </div>
   </div>
 
@@ -147,10 +173,10 @@ footer { margin-top:10px; text-align:center; font-size:0.8rem; color:#64748b; }
   </div>
 
   <div class="joints-plan">
-    <h3 style="color:#38bdf8;margin-top:0;">Estimated Joints & Cost Comparison</h3>
+    <h3 style="color:#38bdf8;margin-top:0;">Approx. Cost Comparison vs. Rolling</h3>
     <p>Based on usable herb, you could roll approximately <span id="estimatedJoints">0</span> joints (0.3 g each)</p>
-    <p class="cost-line">Cost per Joint: £<span id="costPerJoint">0.00</span></p>
-    <p class="cost-line">Equivalent Cost for Capsules to match joints: £<span id="capsulesForJointsCost">0.00</span></p>
+    <p class="cost-line">Cost per Joint: <span id="costPerJoint">0.00</span></p>
+    <p class="cost-line">Equivalent Cost for Capsules to match joints: <span id="capsulesForJointsCost">0.00</span></p>
     <p class="cost-line">Savings by using DryVape Capsules vs joints: <span id="capsulesSavings" class="savings"></span></p>
   </div>
 
@@ -159,10 +185,11 @@ footer { margin-top:10px; text-align:center; font-size:0.8rem; color:#64748b; }
 </div>
 
 <footer>
-© 2026 VentyCalc — Kitchenspoon 2026 · <strong>R1.43</strong>
+© 2026 VentyCalc — Kitchenspoon 2026 · <strong>R1.48</strong>
 </footer>
 
 <script>
+// R1.48: Immutable MathEngine + updateDashboard (cost outputs now numeric only)
 const capsuleSlider=document.getElementById('capsule');
 const tempSlider=document.getElementById('temp');
 const herbSlider=document.getElementById('herbTotal');
@@ -173,92 +200,104 @@ const storkWarning=document.getElementById('storkWarning');
 const weekdaySelect=document.getElementById('weekdaySessions');
 const weekendSelect=document.getElementById('weekendSessions');
 const totalWeeksSelect=document.getElementById('totalWeeks');
-
 const totalCapsulesLabel=document.getElementById('totalCapsulesLabel');
 const spareCapsulesOutput=document.getElementById('spareCapsules');
 const capsShortfall=document.getElementById('capsShortfall');
 const BASE_DRAWS=8;
 const jointWeight=0.3;
 
+const MathEngine = Object.freeze({
+  calcUsableHerb: (totalHerb, stork) => totalHerb*(1-stork),
+  calcTotalCapsules: (usableHerb, capsuleWeight) => Math.floor(usableHerb/capsuleWeight),
+  calcDraws: (baseDraws, temp, airflow) => Math.max(1, Math.ceil((baseDraws-(temp-170)/10)/airflow)),
+  calcGramsPerDraw: (capsuleWeight, draws) => capsuleWeight/draws,
+  calcWeeklyCapsules: (weekdayCaps, weekendCaps, weeks) => ({workday: weekdayCaps*5*weeks, weekend: weekendCaps*2*weeks, total: weekdayCaps*5*weeks + weekendCaps*2*weeks}),
+  calcHerbUsed: (capsuleWeight, weeklyCaps) => ({workday: capsuleWeight*weeklyCaps.workday, weekend: capsuleWeight*weeklyCaps.weekend, total: capsuleWeight*weeklyCaps.total}),
+  calcCostPerGram: (price, totalHerb) => price/totalHerb,
+  calcCostPerCapsule: (price, totalCapsules) => price/totalCapsules,
+  calcCostPerDraw: (gramsPerDraw, costPerGram) => gramsPerDraw*costPerGram,
+  calcJoints: (usableHerb, jointWeight) => Math.floor(usableHerb/jointWeight),
+  calcCostPerJoint: (price, totalJoints) => price/totalJoints,
+  calcCapsulesForJoints: (capsuleCost, numJoints) => capsuleCost*numJoints,
+  calcSavings: (bagCost, capsulesCost) => ({money: bagCost - capsulesCost, percent: ((bagCost - capsulesCost)/bagCost)*100})
+});
+
 function updateDashboard(){
-  const capsule=parseFloat(capsuleSlider.value);
-  const temp=parseInt(tempSlider.value);
-  const herb=parseFloat(herbSlider.value);
-  const price=parseFloat(priceSlider.value);
-  const airflow=parseFloat(airflowSelect.value);
-  const stork=parseFloat(storkSelect.value);
-  const weeks=parseInt(totalWeeksSelect.value);
+  const inputs = {
+    capsule: parseFloat(capsuleSlider.value),
+    temp: parseInt(tempSlider.value),
+    herb: parseFloat(herbSlider.value),
+    price: parseFloat(priceSlider.value),
+    airflow: parseFloat(airflowSelect.value),
+    stork: parseFloat(storkSelect.value),
+    weeks: parseInt(totalWeeksSelect.value),
+    weekdayCaps: parseInt(weekdaySelect.value),
+    weekendCaps: parseInt(weekendSelect.value)
+  };
 
-  capsuleVal.textContent=capsule.toFixed(2);
-  tempVal.textContent=temp;
-  herbVal.textContent=herb.toFixed(1);
-  priceVal.textContent=price;
+  capsuleVal.textContent=inputs.capsule.toFixed(2);
+  tempVal.textContent=inputs.temp;
+  herbVal.textContent=inputs.herb.toFixed(1);
+  priceVal.textContent=inputs.price;
 
-  const usable=herb*(1-stork);
-  usableHerb.textContent=usable.toFixed(2);
-  storkWarning.style.display=stork===0?'block':'none';
+  const usable = MathEngine.calcUsableHerb(inputs.herb, inputs.stork);
+  usableHerb.textContent = usable.toFixed(2);
+  storkWarning.style.display = inputs.stork===0?'block':'none';
 
-  let draws=Math.ceil((BASE_DRAWS-(temp-170)/10)/airflow);
-  draws=Math.max(1,draws);
-  document.getElementById('draws').textContent=draws;
-  gramsPerDraw.textContent=(capsule/draws).toFixed(3);
+  const draws = MathEngine.calcDraws(BASE_DRAWS, inputs.temp, inputs.airflow);
+  document.getElementById('draws').textContent = draws;
+  gramsPerDraw.textContent = MathEngine.calcGramsPerDraw(inputs.capsule, draws).toFixed(3);
 
-  const totalCapsAvailable=Math.floor(usable/capsule);
-  totalCapsules.textContent=totalCapsAvailable;
+  const totalCapsAvailable = MathEngine.calcTotalCapsules(usable, inputs.capsule);
+  totalCapsules.textContent = totalCapsAvailable;
 
-  const totalRequired=weekdaySelect.value*5*weeks+weekendSelect.value*2*weeks;
-  totalCapsulesWorkday.textContent=weekdaySelect.value*5*weeks;
-  totalCapsulesWeekend.textContent=weekendSelect.value*2*weeks;
-  totalCapsulesWeek.textContent=totalRequired;
+  const weeklyCaps = MathEngine.calcWeeklyCapsules(inputs.weekdayCaps, inputs.weekendCaps, inputs.weeks);
+  totalCapsulesWorkday.textContent = weeklyCaps.workday;
+  totalCapsulesWeekend.textContent = weeklyCaps.weekend;
+  totalCapsulesWeek.textContent = weeklyCaps.total;
 
-  if(totalRequired>totalCapsAvailable){
+  if(weeklyCaps.total > totalCapsAvailable){
     totalCapsulesLabel.style.color='#fb7185';
     totalCapsulesLabel.style.animation='pulse 1.2s infinite';
     capsShortfall.style.display='block';
-    capsShortfall.textContent=`Short by ${totalRequired-totalCapsAvailable} capsule(s)`;
-  }else{
+    capsShortfall.textContent=`Short by ${weeklyCaps.total-totalCapsAvailable} capsule(s)`;
+  } else {
     totalCapsulesLabel.style.color='';
     totalCapsulesLabel.style.animation='';
     capsShortfall.style.display='none';
   }
 
-  const spare=totalCapsAvailable-totalRequired;
-  spareCapsulesOutput.style.display=spare>0?'block':'none';
-  spareCapsulesOutput.textContent=`Spare Capsules: ${Math.floor(spare)}`;
+  const spare = totalCapsAvailable - weeklyCaps.total;
+  spareCapsulesOutput.style.display = spare>0?'block':'none';
+  spareCapsulesOutput.textContent = `Spare Capsules: ${Math.floor(spare)}`;
 
-  // Correct cost calculations
-  const costPerGramValue = price / herb;
+  const costPerGramValue = MathEngine.calcCostPerGram(inputs.price, inputs.herb);
   costPerGram.textContent = costPerGramValue.toFixed(2);
-
-  const costPerCapsuleValue = price / totalCapsAvailable;
+  const costPerCapsuleValue = MathEngine.calcCostPerCapsule(inputs.price, totalCapsAvailable);
   costPerCapsule.textContent = costPerCapsuleValue.toFixed(2);
+  costPerDraw.textContent = MathEngine.calcCostPerDraw(inputs.capsule/draws, costPerGramValue).toFixed(2);
 
-  costPerDraw.textContent=((capsule/costPerCapsuleValue)*costPerCapsuleValue).toFixed(2);
-  costWorkday.textContent=(weekdaySelect.value*5*weeks*capsule*costPerGramValue).toFixed(2);
-  costWeekend.textContent=(weekendSelect.value*2*weeks*capsule*costPerGramValue).toFixed(2);
-  costTotal.textContent=(totalRequired*capsule*costPerGramValue).toFixed(2);
-  costStems.textContent=(herb*stork*costPerGramValue).toFixed(2);
+  const herbUsed = MathEngine.calcHerbUsed(inputs.capsule, weeklyCaps);
+  weekdayHerb.textContent = herbUsed.workday.toFixed(2);
+  weekendHerb.textContent = herbUsed.weekend.toFixed(2);
+  weeklyTotal.textContent = herbUsed.total.toFixed(2);
 
-  weekdayHerb.textContent=(weekdaySelect.value*5*weeks*capsule).toFixed(2);
-  weekendHerb.textContent=(weekendSelect.value*2*weeks*capsule).toFixed(2);
-  weeklyTotal.textContent=(totalRequired*capsule).toFixed(2);
+  costWorkday.textContent = (herbUsed.workday*costPerGramValue).toFixed(2);
+  costWeekend.textContent = (herbUsed.weekend*costPerGramValue).toFixed(2);
+  costTotal.textContent = (herbUsed.total*costPerGramValue).toFixed(2);
+  costStems.textContent = (inputs.herb*inputs.stork*costPerGramValue).toFixed(2);
 
-  // Joints calculation
-  const estJoints=Math.floor(usable/jointWeight);
-  document.getElementById('estimatedJoints').textContent=estJoints;
+  const estJoints = MathEngine.calcJoints(usable, jointWeight);
+  document.getElementById('estimatedJoints').textContent = estJoints;
+  const totalJoints = Math.floor(inputs.herb/jointWeight);
+  const costPerJoint = MathEngine.calcCostPerJoint(inputs.price, totalJoints);
+  document.getElementById('costPerJoint').textContent = costPerJoint.toFixed(2);
 
-  const totalJoints=Math.floor(herb/jointWeight);
-  const bagCost=price;
-  const costPerJoint=bagCost/totalJoints;
-  document.getElementById('costPerJoint').textContent=costPerJoint.toFixed(2);
+  const capsulesForJointsCost = MathEngine.calcCapsulesForJoints(costPerCapsuleValue, estJoints);
+  document.getElementById('capsulesForJointsCost').textContent = capsulesForJointsCost.toFixed(2);
 
-  const capsulesForJointsCost=estJoints*costPerCapsuleValue;
-  document.getElementById('capsulesForJointsCost').textContent=capsulesForJointsCost.toFixed(2);
-
-  // Savings based on actual price of herbs
-  let moneySaved = bagCost - capsulesForJointsCost;
-  let savingsPercent = (moneySaved / bagCost) * 100;
-  capsulesSavings.textContent = `£${moneySaved.toFixed(2)} 🙂 (${savingsPercent.toFixed(0)}%)`;
+  const savings = MathEngine.calcSavings(inputs.price, capsulesForJointsCost);
+  capsulesSavings.textContent = `${savings.money.toFixed(2)} 🙂 (${savings.percent.toFixed(0)}%)`;
 }
 
 document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',updateDashboard));
